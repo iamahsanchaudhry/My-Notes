@@ -30,70 +30,59 @@ late final TextEditingController _email;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Login'),
-      ),
-      body: FutureBuilder(
-        future: Firebase.initializeApp(
-          options: DefaultFirebaseOptions.currentPlatform,
-        ),
-        builder: (context,snapshot){
-          switch (snapshot.connectionState){
-            case ConnectionState.done:
-              return Column(
-          children: [
-            TextField(
-              controller: _email,
-              enableSuggestions: true,
-              autocorrect: false,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(
-                hintText: 'Enter your email here',
+      appBar: AppBar(title: const Text('Login'),),
+      body: Column(
+            children: [
+              TextField(
+                controller: _email,
+                enableSuggestions: true,
+                autocorrect: false,
+                keyboardType: TextInputType.emailAddress,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your email here',
+                ),
               ),
-            ),
-            TextField(
-              controller: _password,
-              obscureText: true,
-              enableSuggestions: true,
-              autocorrect: false,
-              decoration: const InputDecoration(
-                hintText: 'Enter your password here',
+              TextField(
+                controller: _password,
+                obscureText: true,
+                enableSuggestions: true,
+                autocorrect: false,
+                decoration: const InputDecoration(
+                  hintText: 'Enter your password here',
+                ),
               ),
-            ),
-            TextButton(
-              onPressed: () async {
-                final email = _email.text;
-                final password = _password.text;
-                try{
-                  FirebaseAuth.instance.
-                signInWithEmailAndPassword
-                (email: email, password: password);
-                } on FirebaseAuthException catch (e) {
-                  if(e.code == 'user-not-found'){
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("User not found"),
-                      ));
+              TextButton(
+                onPressed: () async {
+                  final email = _email.text;
+                  final password = _password.text;
+                  try{
+                    FirebaseAuth.instance.
+                  signInWithEmailAndPassword
+                  (email: email, password: password);
+                  } on FirebaseAuthException catch (e) {
+                    if(e.code == 'user-not-found'){
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("User not found"),
+                        ));
+                    }
+                    else{
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text("Login Succesfully!"),
+                        ));
+                      print(e.code);
+                    }
                   }
-                  else{
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("Login Succesfully!"),
-                      ));
-                    print(e.code);
-                  }
-                }
-                
-                
-              } , 
-              child: const Text('Login')),
-          ],
-        );
-            case ConnectionState.waiting:
-            return const Center(child: CircularProgressIndicator()); // Loading indicator
-
-          default:
-            return const Center(child: CircularProgressIndicator()); // Fallback
-          }
-          },)
-    );
+                  print(FirebaseAuth.instance.currentUser);
+                  
+                } , 
+                child: const Text('Login')),
+                TextButton(onPressed: () {
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                    '/register/', (route) => false);
+                }, child: const Text('Not Registered yet? Register here!'))
+            ],
+          ),
+    );    
   }
 
 }
